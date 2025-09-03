@@ -2,45 +2,75 @@
 FROM registry.access.redhat.com/ubi9/nodejs-20 AS build
 WORKDIR /opt/app-root/src
 
-# 1) Instalar deps SIN scripts (evita que corra postinstall->vite build antes del código)
+# Instalar deps SIN ejecutar postinstall (evita que corra 'vite build' sin código)
 COPY package*.json ./
 RUN npm ci --no-audit --no-fund --ignore-scripts
 
-# 2) Copiar el código y recién ahí construir
+# Copiar código y ahora sí construir
 COPY . .
 RUN npm run build
 
-# ---------- Runtime (NGINX no-root y compatible SCC restricted) ----------
+
+# ---------- Runtime (NGINX UBI9, compatible SCC restricted) ----------
 FROM registry.access.redhat.com/ubi9/nginx-120
 
-# Trabajar como root solo para preparar permisos
+# Preparar como root (solo para escribir config y permisos)
 USER 0
 
-# Copiamos configuración
-COPY default.conf /etc/nginx/conf.d/default.conf
+# Escribir la configuración en la ruta que CARGA la imagen UBI9 por defecto:
+# /opt/app-root/etc/nginx.default.d/*.conf (dentro del 'server' default)
+# OJO: este fragmento es de nivel "server" (NO lleva 'server { ... }')
+RUN /bin/sh -lc 'cat > /opt/app-root/etc/nginx.default.d/zz_app.conf << "EOF"\n\
+# Docroot real del build\n\
+root /usr/share/nginx/html;\n\
+index index.html;\n\
+\n\
+# SPA React/Vite\n\
+location / {\n\
+  try_files $uri /index.html;\n\
+}\n\
+\n\
+# Reverse proxy a n8n (evita problemas de cert en el navegador)\n\
+location /webhook/nist-csf {\n\
+  proxy_pass https://n8n-n8n.apps.focus-ocp-sno-virt.datco.net/webhook/nist-csf;\n\
+  proxy_ssl_server_name on;\n\
+  proxy_ssl_verify off;\n\
+  proxy_set_header Host $host;\n\
+  proxy_set_header X-Forwarded-Proto $scheme;\n\
+  proxy_set_header X-Forwarded-For $remote_addr;\n\
+}\n\
+location /webhook/pentest {\n\
+  proxy_pass https://n8n-n8n.apps.focus-ocp-sno-virt.datco.net/webhook/pentest;\n\
+  proxy_ssl_server_name on;\n\
+  proxy_ssl_verify off;\n\
+  proxy_set_header Host $host;\n\
+  proxy_set_header X-Forwarded-Proto $scheme;\n\
+  proxy_set_header X-Forwarded-For $remote_addr;\n\
+}\n\
+\n\
+# Tamaño de upload razonable para .xlsx\n\
+client_max_body_size 25m;\n\
+\n\
+# Rutas temporales en /tmp (con permisos)\n\
+client_body_temp_path /tmp/nginx_cache/client_body;\n\
+proxy_temp_path       /tmp/nginx_cache/proxy;\n\
+fastcgi_temp_path     /tmp/nginx_cache/fastcgi;\n\
+uwsgi_temp_path       /tmp/nginx_cache/uwsgi;\n\
+scgi_temp_path        /tmp/nginx_cache/scgi;\n\
+EOF'
 
-# Crear TODOS los directorios necesarios y dar permisos de grupo 0 (root)
-# Esto permite correr con UID aleatorio (SCC restricted) sin usar USER fijo.
-RUN mkdir -p \
-      /usr/share/nginx/html \
-      /etc/nginx/conf.d \
-      /var/cache/nginx \
-      /var/log/nginx \
-      /tmp/nginx_cache/client_body \
-      /tmp/nginx_cache/proxy \
-      /tmp/nginx_cache/fastcgi \
-      /tmp/nginx_cache/uwsgi \
-      /tmp/nginx_cache/scgi \
-  && rm -rf /usr/share/nginx/html/* \
-  # Lectura/ejecución para cualquiera en el docroot (SPA estática)
-  && chmod -R a+rX /usr/share/nginx/html \
-  # Directorios que nginx podría usar en runtime
-  && chmod -R 1777 /tmp/nginx_cache \
-  # Dar control por grupo 0 para compatibilidad extra con SCC restricted
-  && chgrp -R 0 /etc/nginx /var/cache/nginx /var/log/nginx /tmp/nginx_cache \
-  && chmod -R g+rwX /etc/nginx /var/cache/nginx /var/log/nginx /tmp/nginx_cache
-
-# Copiar el build estático
+# Copiar el build estático al docroot
 COPY --from=build /opt/app-root/src/dist/ /usr/share/nginx/html/
+
+# Permisos compatibles con UID aleatorio (SCC restricted)
+RUN find /usr/share/nginx/html -type d -exec chmod 0755 {} \; \
+ && find /usr/share/nginx/html -type f -exec chmod 0644 {} \; \
+ && mkdir -p /tmp/nginx_cache/client_body /tmp/nginx_cache/proxy /tmp/nginx_cache/fastcgi /tmp/nginx_cache/uwsgi /tmp/nginx_cache/scgi \
+ && chmod -R 1777 /tmp/nginx_cache \
+ && chgrp -R 0 /opt/app-root/etc /var/cache/nginx /var/log/nginx /tmp/nginx_cache \
+ && chmod -R g+rwX /opt/app-root/etc /var/cache/nginx /var/log/nginx /tmp/nginx_cache
+
+# No fijamos USER: OpenShift asigna un UID aleatorio válido
+# USER 1001   # <- NO usar
 
 EXPOSE 8080
