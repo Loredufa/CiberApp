@@ -2,7 +2,7 @@
 FROM registry.access.redhat.com/ubi9/nodejs-20 AS build
 WORKDIR /opt/app-root/src
 
-# Instalar deps SIN scripts (evita que corra postinstall antes de tener el código)
+# Instalar deps SIN scripts (evita postinstall -> vite build sin código)
 COPY package*.json ./
 RUN npm ci --no-audit --no-fund --ignore-scripts
 
@@ -11,29 +11,29 @@ COPY . .
 RUN npm run build
 
 
-# ---------- Runtime (NGINX UBI9, compatible con SCC restricted) ----------
+# ---------- Runtime (NGINX UBI9, SCC restricted friendly) ----------
 FROM registry.access.redhat.com/ubi9/nginx-120
 
 # Preparar como root para copiar conf y ajustar permisos
 USER 0
 
-# 👇 OJO: UBI9 nginx.conf NO incluye /etc/nginx/conf.d/*,
-#        sí incluye /opt/app-root/etc/nginx.default.d/*.conf dentro del server por defecto.
-# Copiamos nuestro fragmento (nivel "server", SIN 'server { }') a esa carpeta:
+# UBI9 carga /opt/app-root/etc/nginx.default.d/*.conf dentro del server por defecto
 COPY nginx/zz_app.conf /opt/app-root/etc/nginx.default.d/zz_app.conf
 
-# Copiar los estáticos generados por Vite al docroot real
+# Copiar estáticos Vite
 COPY --from=build /opt/app-root/src/dist/ /usr/share/nginx/html/
 
-# Permisos para UID aleatorio (SCC restricted)
-RUN find /usr/share/nginx/html -type d -exec chmod 0755 {} \; \
- && find /usr/share/nginx/html -type f -exec chmod 0644 {} \; \
- && mkdir -p /tmp/nginx_cache/client_body /tmp/nginx_cache/proxy /tmp/nginx_cache/fastcgi /tmp/nginx_cache/uwsgi /tmp/nginx_cache/scgi \
- && chmod -R 1777 /tmp/nginx_cache \
- && chgrp -R 0 /opt/app-root/etc /var/cache/nginx /var/log/nginx /tmp/nginx_cache \
- && chmod -R g+rwX /opt/app-root/etc /var/cache/nginx /var/log/nginx /tmp/nginx_cache
+# Permisos y directorios necesarios (crear antes de chgrp/chmod)
+RUN set -eux; \
+    find /usr/share/nginx/html -type d -exec chmod 0755 {} \; ; \
+    find /usr/share/nginx/html -type f -exec chmod 0644 {} \; ; \
+    mkdir -p /tmp/nginx_cache/client_body /tmp/nginx_cache/proxy /tmp/nginx_cache/fastcgi /tmp/nginx_cache/uwsgi /tmp/nginx_cache/scgi \
+             /var/cache/nginx /var/log/nginx /opt/app-root/etc/nginx.default.d ; \
+    chmod -R 1777 /tmp/nginx_cache ; \
+    chgrp -R 0 /opt/app-root/etc /var/cache/nginx /var/log/nginx /tmp/nginx_cache ; \
+    chmod -R g+rwX /opt/app-root/etc /var/cache/nginx /var/log/nginx /tmp/nginx_cache
 
-# No fijes USER: OpenShift asigna un UID aleatorio válido
-# USER 1001   # <- NO usar
+# No fijes USER: OpenShift asigna un UID aleatorio válido (SCC restricted)
+# USER 1001  # <- NO usar
 
 EXPOSE 8080
