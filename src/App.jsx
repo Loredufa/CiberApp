@@ -143,200 +143,173 @@ export default function App() {
   }
 
   return (
-<div
-      style={{
-        minHeight: "100svh",
-        display: "grid",
-        placeItems: "center",
-        background: "#0e1016",
-        color: "#e6e8f0",
-        padding: "24px",
-        fontFamily:
-          "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,Ubuntu,Inter,sans-serif",
-      }}
-    >
-      <div
-        style={{
-          width: "min(880px, 100%)",
-          background: "#151924",
-          border: "1px solid #273043",
-          borderRadius: 16,
-          padding: 24,
-          boxShadow: "0 10px 35px rgba(0,0,0,.4)",
-        }}
-      >
-        {/* Header con logo grande y título de la app */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 16,
-            marginBottom: 16,
-          }}
-        >
-          <img
-            src="/vite.svg"
-            alt="CiberApp"
-            className="app-logo" /* tamaño definido en index.html */
-            style={{
-              filter: "drop-shadow(0 6px 18px rgba(0,0,0,.35))",
-              flexShrink: 0,
-            }}
-          />
-          <div>
-            <h1 style={{ margin: 0, fontSize: 30 }}>
-              CiberApp — Herramientas de Ciberseguridad
-            </h1>
-            <div style={{ opacity: 0.7, marginTop: 4, fontSize: 14 }}>
-              Generá informes y utilidades de seguridad desde tus archivos.
-            </div>
-          </div>
-        </div>
-
-        <hr
-          style={{
-            border: 0,
-            borderTop: "1px solid #273043",
-            margin: "10px 0 18px",
-          }}
-        />
-
-        {/* Título del módulo actual */}
-        <h2 style={{ margin: "0 0 6px", fontSize: 24 }}>
-          Estado de Madurez – NIST CSF 2.0
-        </h2>
-        <p style={{ margin: "0 0 20px", opacity: 0.8 }}>
-          Sube un Excel con los puntajes; el sistema generará un{" "}
-          <strong>.docx</strong> con el resumen, justificación y plan (corto,
-          mediano y largo plazo).
-        </p>
-
-        <form onSubmit={handleSubmit}>
-          <div
-            onDrop={onDrop}
-            onDragOver={onDragOver}
-            onDragLeave={onDragLeave}
-            onClick={() => inputRef.current?.click()}
-            style={{
-              border: `2px dashed ${dragOver ? "#7aa2ff" : "#3a4761"}`,
-              background: dragOver ? "#0f1b3a" : "#0f1420",
-              borderRadius: 12,
-              padding: 28,
-              textAlign: "center",
-              cursor: "pointer",
-              transition: "all .15s ease",
-            }}
-          >
-            <div style={{ fontSize: 18, marginBottom: 4, fontWeight: 600 }}>
-              Arrastra y suelta tu archivo aquí
-            </div>
-            <div style={{ opacity: 0.75, marginBottom: 10 }}>
-              o haz clic para seleccionar
-            </div>
-            <div style={{ fontSize: 13, opacity: 0.6 }}>
-              Acepta: .xlsx, .xls, .xlsm, .csv
-            </div>
-            {file && (
-              <div style={{ marginTop: 12, fontSize: 14 }}>
-                🗂️ <strong>{file.name}</strong>{" "}
-                <span style={{ opacity: 0.6 }}>
-                  ({(file.size / 1024).toFixed(1)} KB)
-                </span>
+    <div className="min-h-screen flex flex-col bg-[var(--background-color)] text-[var(--text-primary)]">
+      <header className="sticky top-0 z-50 bg-[var(--background-color)]/80 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--border-color)] py-4">
+            <div className="flex items-center gap-3 text-white">
+              <div className="text-[var(--primary-color)]">
+                <svg
+                  className="h-8 w-8"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15.5v-3.5C7.29 14 5 11.71 5 9.5c0-1.65 1.35-3 3-3s3 1.35 3 3v1h2V9.5c0-2.76-2.24-5-5-5s-5 2.24-5 5C3 12.36 5.64 15 9 15.5v2h2v-2zm2-9.5c0-1.65 1.35-3 3-3s3 1.35 3 3-1.35 3-3 3-3-1.35-3-3z" />
+                </svg>
               </div>
-            )}
-            <input
-              ref={inputRef}
-              type="file"
-              accept=".xlsx,.xls,.xlsm,.csv"
-              onChange={onPickFile}
-              style={{ display: "none" }}
-            />
+              <h1 className="text-white text-xl font-bold">CyberGuard</h1>
+            </div>
+            <nav className="hidden md:flex items-center gap-8">
+              <a
+                className="nav-link text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                href="#"
+              >
+                Dashboard
+              </a>
+              <a
+                className="nav-link text-sm font-medium text-[var(--text-primary)]"
+                href="#"
+              >
+                Tools
+              </a>
+              <a
+                className="nav-link text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                href="#"
+              >
+                Resources
+              </a>
+              <a
+                className="nav-link text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                href="#"
+              >
+                Support
+              </a>
+            </nav>
+            <div className="flex items-center gap-4">
+              <button className="flex items-center justify-center rounded-full h-10 w-10 text-[var(--text-secondary)] hover:bg-[var(--border-color)] hover:text-[var(--text-primary)] transition-colors duration-300">
+                <span className="material-symbols-outlined">notifications</span>
+              </button>
+              <div
+                className="bg-center bg-no-repeat bg-cover rounded-full size-10 border-2 border-[var(--primary-color)]"
+                style={{
+                  backgroundImage:
+                    'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAicWHVJoPXXiLcblqG7v7qvvNJZ7yjGddvQP36GnbVeR4UpvHQgvuz4s6G4exzbg37KDd2M1LAWrUZbKSdjiRaR5293SwV8kqOLU0MMy3_dIT_HgjMCWsqQb_X3MN48qgOtoe4wSEGXCeA6L-mLeKj5w-FuFwuF2dwoE_vJye29DLSvpe8Rsr3YUp-d6-quvqyh5zJO9Kof_8DK0b4-o7snDcyiB4kLzrnMjMsbwdKo06joT0b5iXjZ26Fau6-n8fJaWJfWDLLmtc")',
+                }}
+              ></div>
+            </div>
           </div>
-
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              marginTop: 18,
-              alignItems: "center",
-            }}
-          >
-            <button
-              type="submit"
-              disabled={submitting || !file}
-              style={{
-                background: submitting ? "#33405a" : "#4f7cff",
-                color: "white",
-                border: 0,
-                borderRadius: 10,
-                padding: "12px 16px",
-                fontWeight: 600,
-                cursor: submitting || !file ? "not-allowed" : "pointer",
-                transition: "background .15s ease",
-              }}
-            >
-              {submitting ? "Generando…" : "Generar informe (.docx)"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setFile(null);
-                setError("");
-                setStatus("");
-                if (inputRef.current) inputRef.current.value = "";
-              }}
-              disabled={submitting && !file}
-              style={{
-                background: "transparent",
-                color: "#c8d1e8",
-                border: "1px solid #36415a",
-                borderRadius: 10,
-                padding: "12px 16px",
-                cursor: submitting ? "not-allowed" : "pointer",
-              }}
-            >
-              Limpiar
-            </button>
-          </div>
-        </form>
-
-        {status && (
-          <div
-            style={{
-              marginTop: 16,
-              padding: "10px 12px",
-              borderRadius: 10,
-              background: "#0e1e34",
-              border: "1px solid #283754",
-              color: "#a6c0ff",
-              fontSize: 14,
-            }}
-          >
-            {status}
-          </div>
-        )}
-
-        {error && (
-          <div
-            style={{
-              marginTop: 16,
-              padding: "10px 12px",
-              borderRadius: 10,
-              background: "#2a1113",
-              border: "1px solid #5e272b",
-              color: "#ffb4b4",
-              fontSize: 14,
-            }}
-          >
-            {error}
-          </div>
-        )}
-
-        <div style={{ marginTop: 22, fontSize: 12, opacity: 0.55 }}>
-          Webhook: <code>{WEBHOOK_URL}</code>
         </div>
-      </div>
+      </header>
+
+      <main className="flex-grow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl lg:text-5xl font-extrabold text-[var(--text-primary)] mb-4 tracking-tight">
+              Cybersecurity Document Generators
+            </h2>
+            <p className="text-lg text-[var(--text-secondary)] max-w-3xl mx-auto">
+              Streamline your security workflows with our automated document generation tools. Upload your files and get professional, compliant documents in seconds.
+            </p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-12">
+            <div className="glassmorphism-card p-8 rounded-2xl flex flex-col">
+              <div className="mb-6 flex items-center gap-4">
+                <div className="bg-[var(--primary-color)]/10 p-3 rounded-lg text-[var(--primary-color)]">
+                  <span className="material-symbols-outlined text-3xl">shield</span>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">NIST Document Generator</h3>
+                  <p className="text-[var(--text-secondary)]">Align with NIST standards effortlessly.</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="flex-grow flex flex-col">
+                <div
+                  onDrop={onDrop}
+                  onDragOver={onDragOver}
+                  onDragLeave={onDragLeave}
+                  onClick={() => inputRef.current?.click()}
+                  className="flex-grow flex flex-col items-center justify-center file-upload-area rounded-xl p-8 text-center cursor-pointer"
+                  style={{
+                    borderColor: dragOver ? "var(--accent-color)" : undefined,
+                    backgroundColor: dragOver ? "rgba(17,115,212,0.1)" : undefined,
+                  }}
+                >
+                  <span className="material-symbols-outlined text-6xl text-[var(--primary-color)] opacity-70 mb-4">
+                    cloud_upload
+                  </span>
+                  <p className="text-lg font-semibold text-[var(--text-primary)] mb-1">
+                    Drag & drop your file here
+                  </p>
+                  <p className="text-[var(--text-secondary)] mb-6">or click to browse</p>
+                  {file && (
+                    <p className="text-sm text-[var(--text-primary)] mb-6">
+                      <strong>{file.name}</strong>
+                    </p>
+                  )}
+                  <input
+                    ref={inputRef}
+                    type="file"
+                    accept=".xlsx,.xls,.xlsm,.csv"
+                    onChange={onPickFile}
+                    className="hidden"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={submitting || !file}
+                  className="btn-primary mt-6 disabled:opacity-50"
+                >
+                  {submitting ? "Generando…" : "Upload File"}
+                </button>
+              </form>
+
+              {status && (
+                <div className="mt-4 p-3 rounded-md bg-[var(--background-color)] border border-[var(--border-color)] text-[var(--text-primary)] text-sm">
+                  {status}
+                </div>
+              )}
+
+              {error && (
+                <div className="mt-4 p-3 rounded-md bg-red-900/20 border border-red-700 text-red-300 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <div className="mt-4 text-[var(--text-secondary)] text-xs">
+                Webhook: <code>{WEBHOOK_URL}</code>
+              </div>
+            </div>
+
+            <div className="glassmorphism-card p-8 rounded-2xl flex flex-col">
+              <div className="mb-6 flex items-center gap-4">
+                <div className="bg-[var(--primary-color)]/10 p-3 rounded-lg text-[var(--primary-color)]">
+                  <span className="material-symbols-outlined text-3xl">bug_report</span>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)]">Pen Test Report Generator</h3>
+                  <p className="text-[var(--text-secondary)]">Automate your penetration testing reports.</p>
+                </div>
+              </div>
+
+              <div className="flex-grow flex flex-col items-center justify-center file-upload-area rounded-xl p-8 text-center cursor-pointer">
+                <span className="material-symbols-outlined text-6xl text-[var(--primary-color)] opacity-70 mb-4">
+                  upload_file
+                </span>
+                <p className="text-lg font-semibold text-[var(--text-primary)] mb-1">
+                  Drag & drop your Excel file
+                </p>
+                <p className="text-[var(--text-secondary)] mb-6">XLS, XLSX, or CSV</p>
+                <button className="btn-primary">Upload Excel File</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
+

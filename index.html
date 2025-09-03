@@ -5,22 +5,93 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CiberApp — Herramientas de Ciberseguridad</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+      rel="stylesheet"
+    />
     <style>
-      /* Tamaño del logo visible en la app */
-      .app-logo {
-        width: 160px;
-        height: 160px;
-        aspect-ratio: 1 / 1;
+      :root {
+        --primary-color: #1173d4;
+        --secondary-color: #0a4a8a;
+        --background-color: #111418;
+        --text-primary: #e0e0e0;
+        --text-secondary: #a0a0a0;
+        --accent-color: #3a7bd5;
+        --card-bg: #1a1a2e;
+        --border-color: #283039;
       }
-      @media (max-width: 480px) {
-        .app-logo {
-          width: 120px;
-          height: 120px;
-        }
+      body {
+        font-family: "Manrope", sans-serif;
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .glassmorphism-card {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+      }
+      .glassmorphism-card:hover {
+        box-shadow: 0 0 20px rgba(17, 115, 212, 0.3);
+        transform: translateY(-5px);
+      }
+      .file-upload-area {
+        border: 2px dashed var(--primary-color);
+        transition: all 0.3s ease;
+      }
+      .file-upload-area:hover {
+        background-color: rgba(17, 115, 212, 0.1);
+        border-color: var(--accent-color);
+      }
+      .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(17, 115, 212, 0.4);
+      }
+      .btn-primary:hover {
+        background-color: var(--accent-color);
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
+      }
+      .nav-link {
+        position: relative;
+        transition: color 0.3s ease;
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary-color);
+        transition: width 0.3s ease;
+      }
+      .nav-link:hover {
+        color: var(--primary-color);
+      }
+      .nav-link:hover::after {
+        width: 100%;
       }
     </style>
   </head>
-  <body>
+  <body class="bg-[var(--background-color)] text-[var(--text-primary)]">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
