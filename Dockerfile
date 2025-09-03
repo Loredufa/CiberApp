@@ -13,17 +13,9 @@ RUN npm run build
 
 # ---------- Runtime (NGINX UBI9, SCC restricted friendly) ----------
 FROM registry.access.redhat.com/ubi9/nginx-120
-
-# Preparar como root para copiar conf y ajustar permisos
 USER 0
-
-# UBI9 carga /opt/app-root/etc/nginx.default.d/*.conf dentro del server por defecto
 COPY nginx/zz_app.conf /opt/app-root/etc/nginx.default.d/zz_app.conf
-
-# Copiar estáticos Vite
 COPY --from=build /opt/app-root/src/dist/ /usr/share/nginx/html/
-
-# Permisos y directorios necesarios (crear antes de chgrp/chmod)
 RUN set -eux; \
     find /usr/share/nginx/html -type d -exec chmod 0755 {} \; ; \
     find /usr/share/nginx/html -type f -exec chmod 0644 {} \; ; \
@@ -32,8 +24,5 @@ RUN set -eux; \
     chmod -R 1777 /tmp/nginx_cache ; \
     chgrp -R 0 /opt/app-root/etc /var/cache/nginx /var/log/nginx /tmp/nginx_cache ; \
     chmod -R g+rwX /opt/app-root/etc /var/cache/nginx /var/log/nginx /tmp/nginx_cache
-
-# No fijes USER: OpenShift asigna un UID aleatorio válido (SCC restricted)
-# USER 1001  # <- NO usar
-
 EXPOSE 8080
+
