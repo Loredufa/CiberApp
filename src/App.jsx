@@ -3,9 +3,9 @@ import "./App.css";
 import { descargarDocx, descargarDocxDesdeMarkdown } from "./GenerateDoc.tsx";
 import PentestUpload from "./PentestUpload.jsx";
 
-// ENV NIST (en dev podés usar '/api/nist' con el proxy de Vite)
-const NIST_WEBHOOK_URL = import.meta.env.DEV? "/api/nist" : (import.meta.env.VITE_N8N_WEBHOOK_URL_NIST || "");
-const NIST_FILE_FIELD = import.meta.env.VITE_N8N_FILE_FIELD_NAME_NIST || "data";
+
+const NIST_WEBHOOK_URL = "https://ciber-app-git-ciberapp.apps.focus-ocp-sno-virt.datco.net/webhook/nist-csf";
+const NIST_FILE_FIELD = "data";
 
 function extractFilenameFromDisposition(disposition) {
   if (!disposition) return null;
