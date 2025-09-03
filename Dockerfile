@@ -32,11 +32,13 @@ RUN mkdir -p \
       /tmp/nginx_cache/uwsgi \
       /tmp/nginx_cache/scgi \
   && rm -rf /usr/share/nginx/html/* \
-  && chgrp -R 0 /usr/share/nginx/html /etc/nginx /var/cache/nginx /var/log/nginx /tmp/nginx_cache \
-  && chmod -R g+rwX /usr/share/nginx/html /etc/nginx /var/cache/nginx /var/log/nginx /tmp/nginx_cache
-
-# No fijamos USER; dejamos que OpenShift asigne UID aleatorio del proyecto (SCC restricted)
-# USER 1001   <-- NO usar
+  # Lectura/ejecución para cualquiera en el docroot (SPA estática)
+  && chmod -R a+rX /usr/share/nginx/html \
+  # Directorios que nginx podría usar en runtime
+  && chmod -R 1777 /tmp/nginx_cache \
+  # Dar control por grupo 0 para compatibilidad extra con SCC restricted
+  && chgrp -R 0 /etc/nginx /var/cache/nginx /var/log/nginx /tmp/nginx_cache \
+  && chmod -R g+rwX /etc/nginx /var/cache/nginx /var/log/nginx /tmp/nginx_cache
 
 # Copiar el build estático
 COPY --from=build /opt/app-root/src/dist/ /usr/share/nginx/html/
