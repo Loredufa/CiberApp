@@ -1,6 +1,5 @@
-node_modules
 .git
-.gitignore
-Dockerfile
-docker-compose.yml
-*.log
+node_modules
+dist
+.vscode
+.DS_Store
