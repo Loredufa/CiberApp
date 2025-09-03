@@ -1,14 +1,12 @@
 // src/App.jsx
 import { useRef, useState } from "react";
-import { descargarDocx } from "./GenerateDoc";
+import { descargarDocx, descargarDocxDesdeMarkdown } from "./GenerateDoc";
 
-// 1) Configura la URL del webhook de n8n
-//    - Ponla en tu .env como VITE_N8N_WEBHOOK_URL="https://tu-n8n/webhook/analisis"
-//    - o ajusta el fallback de abajo:
+// URL del webhook (o usa .env VITE_N8N_WEBHOOK_URL_NIST)
 const WEBHOOK_URL =
-  import.meta.env.VITE_N8N_WEBHOOK_URL_NIST 
+  import.meta.env.VITE_N8N_WEBHOOK_URL_NIST ||
+  "https://TU-DOMINIO-N8N/webhook/nist-csf";
 
-// 2) Nombre del campo de archivo que espera tu Webhook en n8n (ajústalo si es necesario)
 const FILE_FIELD_NAME = "file";
 
 export default function App() {
@@ -27,7 +25,6 @@ export default function App() {
       setStatus("");
     }
   }
-
   function onDrop(e) {
     e.preventDefault();
     setDragOver(false);
@@ -38,12 +35,10 @@ export default function App() {
       setStatus("");
     }
   }
-
   function onDragOver(e) {
     e.preventDefault();
     setDragOver(true);
   }
-
   function onDragLeave() {
     setDragOver(false);
   }
@@ -82,7 +77,6 @@ export default function App() {
         body: form,
       });
 
-      // Si el servidor no responde 2xx, intenta leer mensaje y mostrar
       if (!res.ok) {
         const text = await res.text().catch(() => "");
         throw new Error(
@@ -92,7 +86,7 @@ export default function App() {
 
       const ct = (res.headers.get("content-type") || "").toLowerCase();
 
-      // Caso A: n8n devuelve DOCX directo
+      // A) DOCX directo desde n8n
       if (
         ct.includes(
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -116,7 +110,7 @@ export default function App() {
         return;
       }
 
-      // Caso B: n8n devuelve JSON (el análisis) → generamos DOCX en el front
+      // B) JSON → generamos DOCX en el front
       if (ct.includes("application/json")) {
         const data = await res.json();
         await descargarDocx(data, "EstadoMadurez-NISTCSF.docx");
@@ -124,7 +118,15 @@ export default function App() {
         return;
       }
 
-      // Otros tipos (texto, html, etc.)
+      // **C) Markdown/texto → generamos DOCX en el front**
+      if (ct.includes("text/plain") || ct.includes("text/markdown")) {
+        const md = await res.text();
+        await descargarDocxDesdeMarkdown(md, "EstadoMadurez-NISTCSF.docx");
+        setStatus("Informe generado y descargado ✅");
+        return;
+      }
+
+      // Cualquier otro tipo
       const fallback = await res.text();
       throw new Error(
         `Tipo de respuesta no esperado (${ct}). Contenido: ${fallback.slice(
@@ -141,7 +143,7 @@ export default function App() {
   }
 
   return (
-    <div
+<div
       style={{
         minHeight: "100svh",
         display: "grid",
@@ -163,9 +165,46 @@ export default function App() {
           boxShadow: "0 10px 35px rgba(0,0,0,.4)",
         }}
       >
-        <h1 style={{ margin: "0 0 6px", fontSize: 28 }}>
+        {/* Header con logo grande y título de la app */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            marginBottom: 16,
+          }}
+        >
+          <img
+            src="/vite.svg"
+            alt="CiberApp"
+            className="app-logo" /* tamaño definido en index.html */
+            style={{
+              filter: "drop-shadow(0 6px 18px rgba(0,0,0,.35))",
+              flexShrink: 0,
+            }}
+          />
+          <div>
+            <h1 style={{ margin: 0, fontSize: 30 }}>
+              CiberApp — Herramientas de Ciberseguridad
+            </h1>
+            <div style={{ opacity: 0.7, marginTop: 4, fontSize: 14 }}>
+              Generá informes y utilidades de seguridad desde tus archivos.
+            </div>
+          </div>
+        </div>
+
+        <hr
+          style={{
+            border: 0,
+            borderTop: "1px solid #273043",
+            margin: "10px 0 18px",
+          }}
+        />
+
+        {/* Título del módulo actual */}
+        <h2 style={{ margin: "0 0 6px", fontSize: 24 }}>
           Estado de Madurez – NIST CSF 2.0
-        </h1>
+        </h2>
         <p style={{ margin: "0 0 20px", opacity: 0.8 }}>
           Sube un Excel con los puntajes; el sistema generará un{" "}
           <strong>.docx</strong> con el resumen, justificación y plan (corto,
@@ -173,7 +212,6 @@ export default function App() {
         </p>
 
         <form onSubmit={handleSubmit}>
-          {/* Zona de drag & drop */}
           <div
             onDrop={onDrop}
             onDragOver={onDragOver}
@@ -215,7 +253,6 @@ export default function App() {
             />
           </div>
 
-          {/* Botones */}
           <div
             style={{
               display: "flex",
@@ -264,7 +301,6 @@ export default function App() {
           </div>
         </form>
 
-        {/* Estados */}
         {status && (
           <div
             style={{

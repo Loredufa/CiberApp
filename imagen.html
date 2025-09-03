@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CyberGuard - Cybersecurity Tools</title>
+<link href="data:image/x-icon;base64," rel="icon" type="image/x-icon"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<style type="text/tailwindcss">
+    :root {
+      --primary-color: #1173d4;
+      --secondary-color: #0a4a8a;
+      --background-color: #111418;--text-primary: #e0e0e0;
+      --text-secondary: #a0a0a0;
+      --accent-color: #3a7bd5;
+      --card-bg: #1a1a2e;
+      --border-color: #283039;
+    }
+    body {
+      font-family: 'Manrope', sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    .glassmorphism-card {
+        background: rgba(26, 26, 46, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s ease;
+    }
+    .glassmorphism-card:hover {
+        box-shadow: 0 0 20px rgba(17, 115, 212, 0.3);
+        transform: translateY(-5px);
+    }
+    .file-upload-area {
+        border: 2px dashed var(--primary-color);
+        transition: all 0.3s ease;
+    }
+    .file-upload-area:hover {
+        background-color: rgba(17, 115, 212, 0.1);
+        border-color: var(--accent-color);
+    }
+    .btn-primary {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(17, 115, 212, 0.4);
+    }
+    .btn-primary:hover {
+        background-color: var(--accent-color);
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
+    }
+    .nav-link {
+        position: relative;
+        transition: color 0.3s ease;
+    }
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 2px;
+        bottom: -4px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: var(--primary-color);
+        transition: width 0.3s ease;
+    }
+    .nav-link:hover {
+        color: var(--primary-color);
+    }
+    .nav-link:hover::after {
+        width: 100%;
+    }
+  </style>
+</head>
+<body class="bg-[var(--background-color)] text-[var(--text-primary)]">
+<div class="relative flex size-full min-h-screen flex-col overflow-x-hidden">
+<header class="sticky top-0 z-50 bg-[var(--background-color)]/80 backdrop-blur-sm">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="flex items-center justify-between whitespace-nowrap border-b border-solid border-[var(--border-color)] py-4">
+<div class="flex items-center gap-3 text-white">
+<div class="text-[var(--primary-color)]">
+<svg class="h-8 w-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15.5v-3.5C7.29 14 5 11.71 5 9.5c0-1.65 1.35-3 3-3s3 1.35 3 3v1h2V9.5c0-2.76-2.24-5-5-5s-5 2.24-5 5C3 12.36 5.64 15 9 15.5v2h2v-2zm2-9.5c0-1.65 1.35-3 3-3s3 1.35 3 3-1.35 3-3 3-3-1.35-3-3z"></path>
+</svg>
+</div>
+<h1 class="text-white text-xl font-bold">CyberGuard</h1>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="nav-link text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]" href="#">Dashboard</a>
+<a class="nav-link text-sm font-medium text-[var(--text-primary)]" href="#">Tools</a>
+<a class="nav-link text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]" href="#">Resources</a>
+<a class="nav-link text-sm font-medium text-[var(--text-secondary)] hover:text-[var(--text-primary)]" href="#">Support</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="flex items-center justify-center rounded-full h-10 w-10 text-[var(--text-secondary)] hover:bg-[var(--border-color)] hover:text-[var(--text-primary)] transition-colors duration-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10 border-2 border-[var(--primary-color)]" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAicWHVJoPXXiLcblqG7v7qvvNJZ7yjGddvQP36GnbVeR4UpvHQgvuz4s6G4exzbg37KDd2M1LAWrUZbKSdjiRaR5293SwV8kqOLU0MMy3_dIT_HgjMCWsqQb_X3MN48qgOtoe4wSEGXCeA6L-mLeKj5w-FuFwuF2dwoE_vJye29DLSvpe8Rsr3YUp-d6-quvqyh5zJO9Kof_8DK0b4-o7snDcyiB4kLzrnMjMsbwdKo06joT0b5iXjZ26Fau6-n8fJaWJfWDLLmtc");'></div>
+</div>
+</div>
+</div>
+</header>
+<main class="flex-grow">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+<div class="text-center mb-12">
+<h2 class="text-4xl lg:text-5xl font-extrabold text-[var(--text-primary)] mb-4 tracking-tight">Cybersecurity Document Generators</h2>
+<p class="text-lg text-[var(--text-secondary)] max-w-3xl mx-auto">Streamline your security workflows with our automated document generation tools. Upload your files and get professional, compliant documents in seconds.</p>
+</div>
+<div class="grid lg:grid-cols-2 gap-12">
+<div class="glassmorphism-card p-8 rounded-2xl flex flex-col">
+<div class="mb-6 flex items-center gap-4">
+<div class="bg-[var(--primary-color)]/10 p-3 rounded-lg text-[var(--primary-color)]">
+<span class="material-symbols-outlined text-3xl">shield</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold text-[var(--text-primary)]">NIST Document Generator</h3>
+<p class="text-[var(--text-secondary)]">Align with NIST standards effortlessly.</p>
+</div>
+</div>
+<div class="flex-grow flex flex-col items-center justify-center file-upload-area rounded-xl p-8 text-center cursor-pointer">
+<span class="material-symbols-outlined text-6xl text-[var(--primary-color)] opacity-70 mb-4">cloud_upload</span>
+<p class="text-lg font-semibold text-[var(--text-primary)] mb-1">Drag &amp; drop your file here</p>
+<p class="text-[var(--text-secondary)] mb-6">or click to browse</p>
+<button class="btn-primary">
+                Upload File
+              </button>
+</div>
+</div>
+<div class="glassmorphism-card p-8 rounded-2xl flex flex-col">
+<div class="mb-6 flex items-center gap-4">
+<div class="bg-[var(--primary-color)]/10 p-3 rounded-lg text-[var(--primary-color)]">
+<span class="material-symbols-outlined text-3xl">bug_report</span>
+</div>
+<div>
+<h3 class="text-2xl font-bold text-[var(--text-primary)]">Pen Test Report Generator</h3>
+<p class="text-[var(--text-secondary)]">Automate your penetration testing reports.</p>
+</div>
+</div>
+<div class="flex-grow flex flex-col items-center justify-center file-upload-area rounded-xl p-8 text-center cursor-pointer">
+<span class="material-symbols-outlined text-6xl text-[var(--primary-color)] opacity-70 mb-4">upload_file</span>
+<p class="text-lg font-semibold text-[var(--text-primary)] mb-1">Drag &amp; drop your Excel file</p>
+<p class="text-[var(--text-secondary)] mb-6">XLS, XLSX, or CSV</p>
+<button class="btn-primary">
+                Upload Excel File
+              </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
