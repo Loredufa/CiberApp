@@ -8,8 +8,7 @@
     "build": "vite build",
     "start": "http-server dist -p 8080 --silent",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "postinstall": "vite build"
+    "preview": "vite preview"
   },
   "dependencies": {
     "docx": "^9.5.1",
