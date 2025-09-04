@@ -1,30 +1,31 @@
-# --- Build con Ubuntu (mejor compatibilidad con módulos nativos) ---
-FROM node:20-ubuntu AS build
+# --- Build con Debian completo (no slim) ---
+FROM node:20-bookworm AS build
 
 WORKDIR /app
 
-# Actualizar sistema e instalar dependencias
+# Variables de entorno
+ENV CYPRESS_INSTALL_BINARY=0
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
+
+# La imagen bookworm completa ya tiene python3, make y g++ instalados
+# pero los instalamos por si acaso
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Variables de entorno
-ENV CYPRESS_INSTALL_BINARY=0
-ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-
 # Copiar código completo
 COPY package*.json ./
 COPY . .
 
-# Instalar dependencias con npm install (más robusto para optional deps)
+# Instalar dependencias
 RUN npm cache clean --force && \
     rm -rf node_modules package-lock.json && \
     npm install --no-audit --no-fund
 
-# El postinstall debería funcionar ahora, pero si no, hacer build manual
-RUN npm run build || (echo "Build via postinstall failed, trying direct build..." && npm run build)
+# Build (debería funcionar con el postinstall, pero backup manual)
+RUN npm run build || (echo "Postinstall build failed, trying manual..." && npm run build)
 
 # --- Runtime (NGINX) ---
 FROM nginx:1.25-alpine
