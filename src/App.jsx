@@ -4,8 +4,9 @@ import { descargarDocx, descargarDocxDesdeMarkdown } from "./GenerateDoc.tsx";
 import PentestUpload from "./PentestUpload.jsx";
 
 
-const NIST_WEBHOOK_URL = "https://ciber-app-git-ciberapp.apps.focus-ocp-sno-virt.datco.net/webhook/nist-csf";
+
 const NIST_FILE_FIELD = "data";
+const NIST_WEBHOOK_URL = "/webhook/nist-csf";
 
 function extractFilenameFromDisposition(disposition) {
   if (!disposition) return null;
