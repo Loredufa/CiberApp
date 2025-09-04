@@ -1,4 +1,3 @@
-
 # --- Build (Vite) con Debian/glibc ---
 FROM node:20-bookworm-slim AS build
 
@@ -15,21 +14,17 @@ RUN apt-get update && apt-get install -y \
 ENV CYPRESS_INSTALL_BINARY=0
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
-# Copiar archivos de dependencias primero
+# Copiar archivos de dependencias
 COPY package*.json ./
 
-# Estrategia robusta: limpiar cache y usar npm install
+# Instalar dependencias SIN ejecutar scripts (evita el postinstall problemático)
 RUN npm cache clean --force && \
-    rm -rf node_modules package-lock.json && \
-    npm install --no-audit --no-fund --include=optional
+    npm ci --no-audit --no-fund --ignore-scripts
 
-# Verificar que rollup esté instalado correctamente
-RUN npm ls rollup || echo "Rollup check completed"
-
-# Copiar código fuente
+# Copiar todo el código fuente
 COPY . .
 
-# Build de la aplicación
+# Hacer el build explícitamente
 RUN npm run build
 
 # --- Runtime (NGINX) ---
