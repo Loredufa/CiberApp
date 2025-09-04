@@ -1,31 +1,30 @@
-# --- Build (Vite) con Debian/glibc ---
-FROM node:20-bookworm-slim AS build
+# --- Build con Ubuntu (mejor compatibilidad con módulos nativos) ---
+FROM node:20-ubuntu AS build
 
 WORKDIR /app
 
-# Instalar dependencias del sistema necesarias para compilación nativa
+# Actualizar sistema e instalar dependencias
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Configurar npm para evitar problemas con dependencias opcionales
+# Variables de entorno
 ENV CYPRESS_INSTALL_BINARY=0
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
-# Copiar archivos de dependencias
+# Copiar código completo
 COPY package*.json ./
-
-# Instalar dependencias SIN ejecutar scripts (evita el postinstall problemático)
-RUN npm cache clean --force && \
-    npm ci --no-audit --no-fund --ignore-scripts
-
-# Copiar todo el código fuente
 COPY . .
 
-# Hacer el build explícitamente
-RUN npm run build
+# Instalar dependencias con npm install (más robusto para optional deps)
+RUN npm cache clean --force && \
+    rm -rf node_modules package-lock.json && \
+    npm install --no-audit --no-fund
+
+# El postinstall debería funcionar ahora, pero si no, hacer build manual
+RUN npm run build || (echo "Build via postinstall failed, trying direct build..." && npm run build)
 
 # --- Runtime (NGINX) ---
 FROM nginx:1.25-alpine
